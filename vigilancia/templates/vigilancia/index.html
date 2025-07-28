@@ -1,0 +1,26 @@
+{% extends 'vigilancia/base.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bienvenidos</title>
+   
+</head>
+<body>
+    <div class="container mt-5">
+        <div class="text-center">
+            <h4 class="display-4">POLICIA METROPOLITANA SANTIAGO DE CALI</h4>
+            <h1 class="display-4">Comité de Vigilancia Operacional</h1>
+            
+            
+            <a href="{% url 'vigilancia:estacion' estacion_id=1 %}" class="btn btn-success btn-lg mt-3">Estadística Estaciones de Policia</a>
+        </div>
+    </div>
+
+    
+</body>
+</html>
+{% endblock %}
+

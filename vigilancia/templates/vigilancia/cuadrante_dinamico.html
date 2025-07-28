@@ -1,0 +1,150 @@
+{% extends 'vigilancia/base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <h3 class="mb-4">Consulta dinámica de delitos por cuadrante</h3>
+
+    <div class="row mb-3">
+        <div class="col-md-4">
+            <label>Estación:</label>
+            <select id="selectEstacion" class="form-select">
+                <option value="">Seleccione una estación</option>
+                {% for estacion in estaciones %}
+                    <option value="{{ estacion.id }}">{{ estacion.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label>Cuadrante:</label>
+            <select id="selectCuadrante" class="form-select" disabled>
+                <option value="">Seleccione una estación primero</option>
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label>Semana:</label>
+            <select id="selectSemana" class="form-select" disabled>
+                <option value="">Todas</option>
+            </select>
+        </div>
+    </div>
+
+    <div id="resultado"></div>
+</div>
+
+<script>
+document.getElementById("selectEstacion").addEventListener("change", function () {
+    const estacionId = this.value;
+    const selectCuadrante = document.getElementById("selectCuadrante");
+    const selectSemana = document.getElementById("selectSemana");
+
+    selectCuadrante.innerHTML = '<option value="">Cargando...</option>';
+    selectSemana.innerHTML = '<option value="">Cargando...</option>';
+    selectCuadrante.disabled = true;
+    selectSemana.disabled = true;
+    document.getElementById("resultado").innerHTML = "";
+
+    if (estacionId) {
+        // Cargar cuadrantes
+        fetch(`/vigilancia/ajax/cargar-cuadrantes/?estacion_id=${estacionId}`)
+            .then(response => response.json())
+            .then(data => {
+                selectCuadrante.innerHTML = '<option value="">Seleccione un cuadrante</option>';
+                data.forEach(cuadrante => {
+                    const option = document.createElement("option");
+                    option.value = cuadrante.id;
+                    option.textContent = cuadrante.nombre;
+                    selectCuadrante.appendChild(option);
+                });
+                selectCuadrante.disabled = false;
+            });
+
+        // Cargar semanas disponibles
+        fetch(`/vigilancia/ajax/cargar-semanas-estacion/?estacion_id=${estacionId}`)
+            .then(response => response.json())
+            .then(data => {
+                selectSemana.innerHTML = '<option value="">Todas</option>';
+                data.forEach(semana => {
+                    const option = document.createElement("option");
+                    option.value = semana;
+                    option.textContent = `Semana ${semana}`;
+                    selectSemana.appendChild(option);
+                });
+                selectSemana.disabled = false;
+            });
+    } else {
+        selectCuadrante.innerHTML = '<option value="">Seleccione una estación primero</option>';
+        selectSemana.innerHTML = '<option value="">Todas</option>';
+        selectSemana.disabled = true;
+    }
+});
+
+document.getElementById("selectCuadrante").addEventListener("change", cargarDatos);
+document.getElementById("selectSemana").addEventListener("change", cargarDatos);
+
+function cargarDatos() {
+    const cuadranteId = document.getElementById("selectCuadrante").value;
+    const semana = document.getElementById("selectSemana").value;
+
+    if (cuadranteId) {
+        let url = `/vigilancia/ajax/cargar-datos-cuadrante/?cuadrante_id=${cuadranteId}`;
+        if (semana) {
+            url += `&semana=${semana}`;
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                const tabla = data.tabla;
+                let html = `
+                    <table class="table table-bordered mt-4">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Tipo de delito</th>
+                                <th>2023</th>
+                                <th>2024</th>
+                                <th>Variación</th>
+                                <th>% Porcentaje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                `;
+
+                tabla.forEach(fila => {
+                    let claseVariacion = 'text-warning';
+                    let textoVariacion = fila.variacion;
+                    let clasePorcentaje = 'text-warning';
+                    let textoPorcentaje = `${fila.porcentaje.toFixed(1)}%`;
+
+                    if (fila.variacion > 0) {
+                        claseVariacion = 'text-danger';
+                        textoVariacion = `+${fila.variacion}`;
+                        clasePorcentaje = 'text-danger';
+                        textoPorcentaje = `+${fila.porcentaje.toFixed(1)}%`;
+                    } else if (fila.variacion < 0) {
+                        claseVariacion = 'text-success';
+                        clasePorcentaje = 'text-success';
+                    }
+
+                    html += `
+                        <tr>
+                            <td>${fila.tipo}</td>
+                            <td>${fila["2023"]}</td>
+                            <td>${fila["2024"]}</td>
+                            <td><span class="${claseVariacion}">${textoVariacion}</span></td>
+                            <td><span class="${clasePorcentaje}">${textoPorcentaje}</span></td>
+                        </tr>
+                    `;
+                });
+
+                html += `</tbody></table>`;
+                document.getElementById("resultado").innerHTML = html;
+            });
+    } else {
+        document.getElementById("resultado").innerHTML = "";
+    }
+}
+</script>
+
+{% endblock %}

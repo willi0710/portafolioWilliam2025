@@ -1,0 +1,137 @@
+/* Asegurando que la tabla tenga un buen aspecto visual */
+.table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 20px 0;
+    font-size: 14px;
+}
+
+/* Estilo para las celdas de la tabla */
+.table th, .table td {
+    padding: 12px 15px;
+    text-align: center;
+}
+
+/* Color de fondo en las filas alternas */
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f2f2;
+}
+
+/* Estilo para las filas de totales */
+.table-secondary {
+    background-color: #f8f9fa;
+}
+
+/* Estilo para las celdas que contienen las variaciones de porcentaje */
+.badge {
+    font-size: 12px;
+    padding: 5px 10px;
+    border-radius: 20px;
+}
+
+/* Rojo para valores negativos */
+.badge.bg-danger {
+    background-color: red !important;
+    color: white;
+}
+
+/* Verde para valores positivos */
+.badge.bg-success {
+    background-color: green !important;
+    color: white;
+}
+
+/* Amarillo para valores sin variación */
+.badge.bg-warning {
+    background-color: yellow !important;
+    color: black;
+}
+
+/* Estilo para los selectores de estación */
+select.form-select {
+    width: 250px;
+    margin: 20px 0;
+}
+
+/* Estilo para el contenedor principal */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Títulos */
+h2 {
+    color: #007bff;
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Botones (por ejemplo, si tienes botones para otros filtros) */
+.btn {
+    padding: 8px 20px;
+   
+}
+
+.btn-success {
+    background-color: #278e36 !important; 
+    border-color: #278e36 !important;
+    color: white !important;
+}
+
+.btn-success:hover {
+    background-color: #002f5f !important;
+    border-color: #002f5f !important;
+}
+
+/* Estilo para el header (cabecera) */
+header {
+    background-color: #343a40;
+    padding: 10px 0;
+    color: white;
+    text-align: center;
+}
+
+header nav {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+/* Estilo para el pie de página */
+footer {
+    background-color: #343a40;
+    padding: 10px 0;
+    color: white;
+    text-align: center;
+    margin-top: 30px;
+}
+
+/* Estilo para alertas */
+.alert {
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Alertas de error (rojo) */
+.alert-danger {
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+/* Alertas de éxito (verde) */
+.alert-success {
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+/* Fondo de la página */
+body {
+    background-color: #f4f6f9;
+    font-family: Arial, sans-serif;
+}
+
+/* Márgenes alrededor de la tabla */
+.mt-5 {
+    margin-top: 30px;
+}

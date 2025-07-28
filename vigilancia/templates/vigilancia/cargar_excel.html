@@ -1,0 +1,57 @@
+{% extends 'vigilancia/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Cargar base delitos</h2>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="semana" class="form-label">Número de semana (1-52):</label>
+            <input type="number" class="form-control" id="semana" name="semana" min="1" max="52" required>
+        </div>
+
+        <div class="mb-3">
+            <label for="archivo" class="form-label">Selecciona el archivo Excel:</label>
+            <input type="file" class="form-control" id="archivo" name="archivo" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Cargar</button>
+    </form>
+    
+<form method="post" action="{% url 'vigilancia:eliminar_estacion_semana' %}" class="mt-4">
+    {% csrf_token %}
+    <label>Eliminar datos por estación y semana:</label>
+    <div class="row g-2" style="max-width: 600px;">
+        <div class="col">
+            <select name="estacion" class="form-select" required>
+                <option value="">Selecciona una estación</option>
+                {% for est in estaciones %}
+                    <option value="{{ est.id }}">{{ est.nombre }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <select name="semana" class="form-select" required>
+                <option value="">Selecciona semana</option>
+                {% for s in semanas %}
+                    <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col">
+            <button type="submit" class="btn btn-danger">Eliminar</button>
+        </div>
+    </div>
+</form>
+
+</div>
+{% endblock %}
+
