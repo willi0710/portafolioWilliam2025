@@ -10,7 +10,7 @@ environ.Env.read_env()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # Seguridad
-SECRET_KEY = env('SECRET_KEY', default='clave-de-desarrollo')  # Usar .env en producción
+SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = env.bool('DEBUG', default=True)
 ALLOWED_HOSTS = []
 
