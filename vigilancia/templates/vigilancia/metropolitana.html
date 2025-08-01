@@ -1,0 +1,59 @@
+{% extends 'vigilancia/base.html' %}
+{% block content %}
+
+<div class="container mt-4">
+    <form method="get" class="d-flex align-items-center gap-3 mb-3">
+        <label for="semanaSelect" class="form-label mb-0">Semana:</label>
+        <select id="semanaSelect" name="semana" class="form-select" style="width: auto; min-width: 150px;" onchange="this.form.submit()">
+            <option value="">Todas</option>
+            {% for s in semanas %}
+                <option value="{{ s }}" {% if s|stringformat:"s" == semana_seleccionada %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+        </select>
+    </form>
+
+    <h3 class="mb-4 text-center">Analisis Estadistico Metropolitana</h3>
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Tipo de delito</th>
+                <th>2023</th>
+                <th>2024</th>
+                <th>Variación</th>
+                <th>% Porcentaje</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for fila in tabla %}
+                <tr>
+                    <td>{{ fila.tipo }}</td>
+                    <td>{{ fila.2023 }}</td>
+                    <td>{{ fila.2024 }}</td>
+                    <td>
+                        {% if fila.variacion > 0 %}
+                            <span class="text-danger">+{{ fila.variacion }}</span>
+                        {% elif fila.variacion < 0 %}
+                            <span class="text-success">{{ fila.variacion }}</span>
+                        {% else %}
+                            <span class="text-warning">{{ fila.variacion }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if fila.porcentaje > 0 %}
+                            <span class="text-danger">{{ fila.porcentaje|floatformat:1 }}%</span>
+                        {% elif fila.porcentaje < 0 %}
+                            <span class="text-success">{{ fila.porcentaje|floatformat:1 }}%</span>
+                        {% else %}
+                            <span class="text-warning">{{ fila.porcentaje|floatformat:1 }}%</span>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+
+

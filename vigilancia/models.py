@@ -1,5 +1,4 @@
 from django.db import models
-
 class Estacion(models.Model):
     nombre = models.CharField(max_length=100)
     direccion = models.TextField()
@@ -38,5 +37,4 @@ class Delito(models.Model):
 
     def __str__(self):
         return f"{self.get_tipo_display()} - {self.fecha.year} - {self.cantidad}"
-
 

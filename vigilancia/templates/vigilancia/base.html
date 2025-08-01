@@ -15,30 +15,38 @@
 <body>
         <nav class="navbar navbar-expand-lg navbar-light bg-success border-bottom sticky-top">
         <div class="container">
-            <a class="navbar-brand fw-bold text-white" href="{% url 'vigilancia:estacion' estacion_id=1 %}">POLICÍA NACIONAL DE COLOMBIA</a>
+            <a class="navbar-brand fw-bold text-white" href="{% url 'vigilancia:metropolitana' %}">POLICÍA NACIONAL DE COLOMBIA</a>
 
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
     
-                <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-                    <ul class="navbar-nav">
-                        <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'vigilancia:estacion' estacion_id=1 %}">Estaciónes</a>
-                        </li>                 
-                        <li class="nav-item">
-                        <a class="nav-link text-white" href="{% url 'vigilancia:cuadrante_dinamico' %}">Cuadrantes por Estacion</a>
-                        </li>                 
-                        <li class="nav-item">
-                            <a class="nav-link text-white" href="{% url 'vigilancia:cargar_excel' %}">Cargar Delitos</a>
-                        </li>
-                        <li class="nav-item ms-auto">
-                        <li class="nav-item">
-                             <a class="nav-link text-white" href="/" style="font-size: 0.85rem; opacity: 0.7;">
-                            ← Portafolio</a>
-                        </li>
-                    </ul>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">              
+                        <a class="nav-link text-white" href="{% url 'vigilancia:metropolitana' %}">Metropolitana</a>
+                    </li> 
+                    <li class="nav-item">
+                    {% if estaciones %}
+                        <a class="nav-link text-white" href="{% url 'vigilancia:estacion' estacion_id=estaciones.0.id %}">Estaciones</a>
+                    {% else %}
+                        <span class="nav-link text-white disabled">Estaciones</span>
+                    {% endif %}
+                    </li>
+               
+                    <li class="nav-item">
+                      <a class="nav-link text-white" href="{% url 'vigilancia:cuadrante_dinamico' %}">Cuadrantes por Estacion</a>
+                    </li>                 
+                    <li class="nav-item">
+                        <a class="nav-link text-white" href="{% url 'vigilancia:cargar_excel' %}">Cargar Delitos</a>
+                    </li>
+                    <li class="nav-item ms-auto">
+                        <a class="nav-link text-white" href="/" style="font-size: 0.85rem; opacity: 0.7;">
+                                ← Portafolio
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
@@ -53,8 +61,7 @@
     <!-- Footer -->
     <footer class="bg-light text-center text-muted py-3 mt-5 border-top">
         <small>
-            Ministerio de Defensa - Policia Nacional de Colombia
-            
+           Ministerio de Defensa - Policia Nacional de Colombia
         </small>
     </footer>
 

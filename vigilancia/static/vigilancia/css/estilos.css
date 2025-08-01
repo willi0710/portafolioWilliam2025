@@ -61,7 +61,7 @@ select.form-select {
 
 /* Títulos */
 h2 {
-    color: #007bff;
+    color: #060606;
     text-align: center;
     margin-bottom: 30px;
 }
@@ -73,14 +73,14 @@ h2 {
 }
 
 .btn-success {
-    background-color: #278e36 !important; 
-    border-color: #278e36 !important;
+    background-color: #198754 !important; 
+    border-color: #198754 !important;
     color: white !important;
 }
 
 .btn-success:hover {
-    background-color: #002f5f !important;
-    border-color: #002f5f !important;
+    background-color: #1b6f17 !important;
+    border-color: #447b1a !important;
 }
 
 /* Estilo para el header (cabecera) */
@@ -135,3 +135,4 @@ body {
 .mt-5 {
     margin-top: 30px;
 }
+

@@ -1,0 +1,18 @@
+{% extends 'vigilancia/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>Listado de Estaciones</h3>
+    {% if estaciones %}
+    <ul class="list-group">
+        {% for estacion in estaciones %}
+            <li class="list-group-item">
+                <a href="{% url 'vigilancia:estacion' estacion_id=estacion.id %}">{{ estacion.nombre }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No hay estaciones disponibles.</p>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,8 +1,9 @@
 {% extends 'vigilancia/base.html' %}
 {% block content %}
 <div class="container mt-4">
+    <h3 class="text-center mb-3">Análisis Estadístico Estaciónes</h3>
     <form method="get" class="d-flex align-items-center gap-3 mb-3">
-    <label for="estacionSelect" class="form-label mb-0">Análisis Estación:</label>
+    <label for="estacionSelect" class="form-label mb-0">Estación:</label>
     <select id="estacionSelect" class="form-select" style="width: auto; min-width: 250px;" onchange="cambiarEstacion(this)">
         {% for est in estaciones %}
             <option value="{{ est.id }}" {% if est.id == estacion.id %}selected{% endif %}>
@@ -62,13 +63,16 @@
     </table>
 </div>
 <script>
-    function cambiarEstacion(select) {
-        const estacionId = select.value;
-        const semana = document.getElementById("semanaSelect").value;
-        const url = semana ? `/vigilancia/estacion/${estacionId}/?semana=${semana}` : `/vigilancia/estacion/${estacionId}/`;
-        window.location.href = url;
-    }
+function cambiarEstacion(select) {
+    const estacionId = select.value;
+    const semana = document.getElementById("semanaSelect").value;
+    const baseUrlTemplate = "{% url 'vigilancia:estacion' estacion_id=0 %}";
+    const baseUrl = baseUrlTemplate.replace('/0/', `/${estacionId}/`);
+    const url = semana ? `${baseUrl}?semana=${encodeURIComponent(semana)}` : baseUrl;
+    window.location.href = url;
+}
 </script>
+
 
 {% endblock %}
 

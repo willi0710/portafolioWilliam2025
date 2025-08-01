@@ -4,12 +4,15 @@ import pandas as pd
 from .models import Delito, Estacion, Cuadrante, TIPO_DELITO_CHOICES
 from django.db.models import Sum
 from collections import defaultdict
-from datetime import date
+from datetime import date 
 from django.views.decorators.http import require_POST
 from django.http import JsonResponse
 
 def index(request):
-    return render(request, 'vigilancia/index.html')
+    estaciones = Estacion.objects.all()
+    return render(request, 'vigilancia/index.html', {
+        'estaciones': estaciones,
+    })
 
 def cargar_excel(request):
     semanas_disponibles = Delito.objects.values_list('semana', flat=True).distinct().order_by('semana')
@@ -93,36 +96,10 @@ def cargar_excel(request):
         'semanas': semanas_disponibles,
         'estaciones': estaciones_disponibles
     })
-
-@require_POST
-def eliminar_estacion_semana(request):
-    semana = request.POST.get('semana')
-    estacion_id = request.POST.get('estacion')
-
-    if not semana or not semana.isdigit() or not estacion_id:
-        messages.error(request, "Debes seleccionar una estación y una semana válidas.")
-        return redirect('cargar_excel')
-
-    try:
-        estacion = Estacion.objects.get(id=estacion_id)
-    except Estacion.DoesNotExist:
-        messages.error(request, "Estación no encontrada.")
-        return redirect('cargar_excel')
-
-    delitos_a_eliminar = Delito.objects.filter(
-        cuadrante__estacion=estacion,
-        semana=int(semana)
-    )
-    cantidad = delitos_a_eliminar.count()
-    delitos_a_eliminar.delete()
-
-    messages.success(request, f"Se eliminaron {cantidad} delitos de la estación '{estacion.nombre}' para la semana {semana}.")
-    return redirect('cargar_excel')
-
+    
 def estacion(request, estacion_id):
     # Obtener la estación actual o lanzar 404 si no existe
     estacion = get_object_or_404(Estacion, id=estacion_id)
-    estaciones = Estacion.objects.all()
 
     # Obtener semana seleccionada desde query param (puede ser None)
     semana = request.GET.get('semana')
@@ -173,7 +150,6 @@ def estacion(request, estacion_id):
 
     return render(request, 'vigilancia/estacion.html', {
         'estacion': estacion,
-        'estaciones': estaciones,
         'tabla': tabla,
         'semanas': semanas_disponibles,
         'semana_seleccionada': semana,
@@ -249,3 +225,68 @@ def cargar_semanas_por_estacion(request):
         .order_by('semana')
     )
     return JsonResponse(list(semanas), safe=False)
+
+def metropolitana(request):
+    semana = request.GET.get('semana')  # opcional si usas filtro de semanas
+
+    delitos = Delito.objects.all()
+
+    # Filtrar por semana si aplica
+    if semana:
+        delitos = delitos.filter(semana=semana)
+
+    tipos_delito = dict(Delito._meta.get_field('tipo').choices)
+
+    # Tabla con sumas por tipo y año
+    tabla = defaultdict(lambda: defaultdict(int))
+
+    for delito in delitos:
+        año = delito.fecha.year
+        tipo = tipos_delito.get(delito.tipo, delito.tipo)
+        tabla[tipo][año] += delito.cantidad  # ✅ aquí se corrige el error: sumar cantidad
+
+    # Formatear tabla para mostrar en plantilla
+    resultado = []
+    for tipo, conteo in tabla.items():
+        val_2023 = conteo.get(2023, 0)
+        val_2024 = conteo.get(2024, 0)
+        variacion = val_2024 - val_2023
+        porcentaje = (variacion / val_2023 * 100) if val_2023 != 0 else (100.0 if val_2024 > 0 else 0.0)
+
+        resultado.append({
+            'tipo': tipo,
+            2023: val_2023,
+            2024: val_2024,
+            'variacion': variacion,
+            'porcentaje': porcentaje,
+        })
+
+    semanas = Delito.objects.values_list('semana', flat=True).distinct().order_by('semana')
+
+    context = {
+        'tabla': resultado,
+        'semana_seleccionada': semana,
+        'semanas': semanas,
+    }
+    return render(request, 'vigilancia/metropolitana.html', context)
+
+
+@require_POST
+def eliminar_semana(request):
+    semana = request.POST.get('semana')
+
+    if not semana or not semana.isdigit():
+        messages.error(request, "Número de semana inválido.")
+        return redirect('vigilancia:cargar_excel')
+
+    semana = int(semana)
+    delitos_a_eliminar = Delito.objects.filter(semana=semana)
+    cantidad = delitos_a_eliminar.count()
+    delitos_a_eliminar.delete()
+
+    messages.success(request, f"Se eliminaron {cantidad} delitos registrados en la semana {semana}.")
+    return redirect('vigilancia:cargar_excel')
+
+def lista_estaciones(request):
+    estaciones = Estacion.objects.all()
+    return render(request, 'vigilancia/lista_estaciones.html', {'estaciones': estaciones})

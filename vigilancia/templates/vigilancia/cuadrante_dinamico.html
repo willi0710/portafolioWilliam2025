@@ -2,7 +2,7 @@
 {% block content %}
 
 <div class="container mt-5">
-    <h3 class="mb-4">Consulta dinámica de delitos por cuadrante</h3>
+    <h3 class="mb-4 text-center">Analisis Estadistico Cuadrantes</h3>
 
     <div class="row mb-3">
         <div class="col-md-4">
@@ -60,7 +60,7 @@ document.getElementById("selectEstacion").addEventListener("change", function ()
                 selectCuadrante.disabled = false;
             });
 
-        // Cargar semanas disponibles
+        // Cargar semanas por estación
         fetch(`/vigilancia/ajax/cargar-semanas-estacion/?estacion_id=${estacionId}`)
             .then(response => response.json())
             .then(data => {
@@ -80,9 +80,36 @@ document.getElementById("selectEstacion").addEventListener("change", function ()
     }
 });
 
-document.getElementById("selectCuadrante").addEventListener("change", cargarDatos);
+// CUANDO SE CAMBIA EL CUADRANTE
+document.getElementById("selectCuadrante").addEventListener("change", function () {
+    const cuadranteId = this.value;
+    const selectSemana = document.getElementById("selectSemana");
+
+    if (cuadranteId) {
+        fetch(`/vigilancia/ajax/cargar-semanas-cuadrante/?cuadrante_id=${cuadranteId}`)
+            .then(response => response.json())
+            .then(data => {
+                selectSemana.innerHTML = '<option value="">Todas</option>';
+                data.forEach(semana => {
+                    const option = document.createElement("option");
+                    option.value = semana;
+                    option.textContent = `Semana ${semana}`;
+                    selectSemana.appendChild(option);
+                });
+                selectSemana.disabled = false;
+            });
+    } else {
+        selectSemana.innerHTML = '<option value="">Todas</option>';
+        selectSemana.disabled = true;
+    }
+
+    cargarDatos();  // también cargar los datos del cuadrante
+});
+
+// CUANDO SE CAMBIA LA SEMANA
 document.getElementById("selectSemana").addEventListener("change", cargarDatos);
 
+// FUNCION PARA CARGAR DATOS DE TABLA
 function cargarDatos() {
     const cuadranteId = document.getElementById("selectCuadrante").value;
     const semana = document.getElementById("selectSemana").value;
